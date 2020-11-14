@@ -5,7 +5,7 @@
 #include <jni.h>
 #include <cassert>
 
-namespace world_class
+namespace jni_util
 {
 
 template <typename Elem>

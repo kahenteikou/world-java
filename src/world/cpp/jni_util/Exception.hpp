@@ -7,7 +7,7 @@
 #include <exception>
 #include <stdexcept>
 
-namespace world_class
+namespace jni_util
 {
 
 class JavaException : public std::exception { };

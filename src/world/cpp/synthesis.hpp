@@ -26,8 +26,7 @@ public:
 	//   fft_size             : FFT size
 	//   frame_period         : Temporal period used for the analysis
 	//-----------------------------------------------------------------------------
-	Synthesis(int fs, int fft_size, double frame_period);
-	Synthesis();
+	//Synthesis(int fs, int fft_size, double frame_period);
 	void Synthesis_later(int fs, int fft_size, double frame_period);
 	~Synthesis();
 

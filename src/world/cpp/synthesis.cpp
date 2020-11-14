@@ -27,7 +27,7 @@ using std::max_element;
 namespace world_class
 {
 
-Synthesis::Synthesis(int fs, int fft_size, double frame_period)
+/*Synthesis::Synthesis(int fs, int fft_size, double frame_period)
 	: fs_(fs), fft_size_(fft_size), frame_period_(frame_period / 1000.)
 	, dc_remover_(new double[fft_size_])
 {
@@ -53,10 +53,7 @@ Synthesis::Synthesis(int fs, int fft_size, double frame_period)
 	aperiodic_response_ = new double[fft_size_ * num_thread_];
 	
 	getDCRemover(fft_size_, dc_remover_);
-}
-Synthesis::Synthesis(){
-
-}
+}*/
 void Synthesis::Synthesis_later(int fs, int fft_size, double frame_period){
 	fs_=fs;
 	fft_size_=fft_size;
@@ -559,15 +556,16 @@ void Synthesis::getNoiseSpectrum(
 	fft_execute(forward_real_fft->forward_fft);
 }
 
-extern "C"{
-	JNIEXPORT void JNICALL Java_world_cpp_Synthesis_init(JNIEnv* env,jobject thisj,jint fs,jint fft_size,jdouble frame_period ){
-		convertException(env,[=] () {
-			
-			Wrapper<Synthesis>(env,thisj).create();
-			auto& self=Wrapper<Synthesis>(env,thisj).get();
+extern "C" JNIEXPORT void JNICALL Java_world_cpp_Synthesis_init(JNIEnv* env,jobject thisj,jint fs,jint fft_size,jdouble frame_period ){
+		jni_util::convertException(env,[=] () {
+			jni_util::Wrapper<Synthesis>(env,thisj).create();
+			auto& self=jni_util::Wrapper<Synthesis>(env,thisj).get();
 			self.Synthesis_later(fs,fft_size,frame_period);
 		});
 	}
-	
-}
+extern "C" JNIEXPORT void JNICALL Java_world_cpp_Synthesis_destroy(JNIEnv* env,jobject thisj){
+		jni_util::convertException(env,[=] () {
+			jni_util::Wrapper<Synthesis>(env,thisj).destroy();
+		});
+	}
 }

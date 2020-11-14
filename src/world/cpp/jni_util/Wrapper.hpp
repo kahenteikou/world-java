@@ -5,7 +5,7 @@
 #include "Exception.hpp"
 #include <utility>
 
-namespace world_class
+namespace jni_util
 {
 
 template <typename T>
