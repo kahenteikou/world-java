@@ -54,7 +54,37 @@ Synthesis::Synthesis(int fs, int fft_size, double frame_period)
 	
 	getDCRemover(fft_size_, dc_remover_);
 }
+Synthesis::Synthesis(){
 
+}
+void Synthesis::Synthesis_later(int fs, int fft_size, double frame_period){
+	fs_=fs;
+	fft_size_=fft_size;
+	frame_period_=frame_period/1000.;
+	dc_remover_=new double[fft_size_];
+#ifdef _OPENMP
+	num_thread_ = omp_get_num_procs();
+#else
+	num_thread_ = 1;
+#endif
+
+	minimum_phase_ = new MinimumPhaseAnalysis[num_thread_];
+	inverse_real_fft_ = new InverseRealFFT[num_thread_];
+	forward_real_fft_ = new ForwardRealFFT[num_thread_];
+
+	for (int ii = 0; ii < num_thread_; ii++) {
+		minimum_phase_[ii].initialize(fft_size_);
+		inverse_real_fft_[ii].initialize(fft_size_);
+		forward_real_fft_[ii].initialize(fft_size_);
+	}
+	
+	spectral_envelope_ = new double[(fft_size_ / 2 + 1) * num_thread_];
+	aperiodic_ratio_ = new double[(fft_size_ / 2 + 1) * num_thread_];
+	periodic_response_ = new double[fft_size_ * num_thread_];
+	aperiodic_response_ = new double[fft_size_ * num_thread_];
+	
+	getDCRemover(fft_size_, dc_remover_);
+}
 Synthesis::~Synthesis()
 {
 	delete[] dc_remover_;
@@ -529,4 +559,15 @@ void Synthesis::getNoiseSpectrum(
 	fft_execute(forward_real_fft->forward_fft);
 }
 
+extern "C"{
+	JNIEXPORT void JNICALL Java_world_cpp_Synthesis_init(JNIEnv* env,jobject thisj,jint fs,jint fft_size,jdouble frame_period ){
+		convertException(env,[=] () {
+			
+			Wrapper<Synthesis>(env,thisj).create();
+			auto& self=Wrapper<Synthesis>(env,thisj).get();
+			self.Synthesis_later(fs,fft_size,frame_period);
+		});
+	}
+	
+}
 }

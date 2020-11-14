@@ -148,17 +148,6 @@ private:
 		
 	};
 };
-extern "C"{
-	JNIEXPORT void JNICALL Java_world_cpp_Synthesis_init(JNIEnv* env,jobject thisj,jint fs,jint fft_size,jdouble frame_period ){
-		convertException(env,[=] () {
-			
-			Wrapper<Synthesis>(env,thisj).create();
-			auto& self=Wrapper<Synthesis>(env,thisj).get();
-			self.Synthesis_later(fs,fft_size,frame_period);
-		});
-	}
-	
-}
 
 }
 #endif
